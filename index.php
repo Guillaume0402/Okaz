@@ -1,6 +1,7 @@
 <?php
 
 require_once('templates/header.php');
+require_once('libs/pdo.php');
 require_once('libs/listing.php');
 require_once('libs/category.php');
 
@@ -9,6 +10,12 @@ $listings = getListings();
 
 $categories = getCategories();
 
+// Test de la connection a PDO
+// $query = $pdo->prepare('SELECT * FROM category WHERE id = :id');
+// $query->bindValue(':id', 1, PDO::PARAM_INT);
+// $query->execute();
+// $result = $query->fetch(PDO::FETCH_ASSOC);
+// var_dump($result);
 
 ?>
 
