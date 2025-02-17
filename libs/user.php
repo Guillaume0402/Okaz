@@ -1,0 +1,65 @@
+<?php
+
+
+
+function addUser(PDO $pdo, string $username, string $email, string $password): bool
+{
+    $query = $pdo->prepare("INSERT INTO user (username, email, password) VALUES (:username, :email, :password)");
+    $password = password_hash($password, PASSWORD_DEFAULT);
+    $query->bindValue(':username', $username, PDO::PARAM_STR);
+    $query->bindValue(':email', $email, PDO::PARAM_STR);
+    $query->bindValue(':password', $password, PDO::PARAM_STR);
+
+    return $query->execute();
+}
+
+
+
+
+function verifyUser($user): array|bool
+{
+    $errors = [];
+    if (isset($user["username"])) {
+        if ($user["username"] === "") {
+            $errors["username"] = "Veuillez renseigner un nom d'utilisateur";
+        }
+    } else {
+        $errors["username"] = "Le champ username n'a pas été envoyé";
+    }
+    if (isset($user["password"])) {
+        if (strlen($user["password"]) < 8) {
+            $errors["password"] = "Le mot de passe doit faire au moins 8 caractères ";
+        }
+    } else {
+        $errors["password"] = "Le champ password n'a pas été envoyé";
+    }
+    if (isset($user["email"])) {
+        if ($user["email"] === "") {
+            $errors["email"] = "Le champ email est obligatoire";
+        } else {
+            if (!filter_var($user["email"], FILTER_VALIDATE_EMAIL)) {
+                $errors["email"] = "Le format d'email n'est pas valide";
+            }
+        }
+    } else {
+        $errors["email"] = "Le champ email n'a pas été envoyé";
+    }
+    if (count($errors)) {
+        return $errors;
+    } else {
+        return true;
+    }
+}
+
+function verifyUserLoginPassword(PDO $pdo, string $email, string $password): bool|array
+{
+    $query = $pdo->prepare("SELECT id, username, email, password FROM user WHERE email = :email");
+    $query->bindValue(':email', $email, PDO::PARAM_STR);
+    $query->execute();
+    $user = $query->fetch(PDO::FETCH_ASSOC);
+    if ($user && password_verify($password, $user["password"])) {
+        return $user;
+    } else {
+        return false;
+    }
+}
