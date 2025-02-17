@@ -6,7 +6,7 @@ require_once('libs/listing.php');
 require_once('libs/category.php');
 
 
-$listings = getListings();
+$listings = getListings($pdo);
 
 $categories = getCategories();
 
@@ -31,7 +31,6 @@ $categories = getCategories();
 </div>
 <div class="row text-center">
     <h2>Les dernières annonces</h2>
-
     <?php foreach ($listings as $key => $listing) {
         require 'templates/listing_part.php';
     }  ?>
